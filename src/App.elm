@@ -10,34 +10,43 @@ main =
     , update = update
     }
 
-type alias Model = 
-  { value : Int }
+type alias CounterModel = 
+  { id : Int 
+  , value : Int 
+  }
 
-type Msg = Increment | Decrement
+type alias Model = List CounterModel
+
+type Msg = Increment Int | Decrement Int
 
 model : Model 
 model = 
-  { value = 0 }
+  [ { id = 1, value = 0 }
+  , { id = 2, value = 0 }
+  ]
 
 update : Msg -> Model -> Model
 update msg model = 
   case msg of 
-    Increment -> 
-      { model | value = model.value + 1 }   
+    Increment id -> 
+      List.map (\ c -> if c.id == id then { c | value = c.value + 1 } else c ) model 
 
-    Decrement -> 
-      { model | value = max (model.value - 1) 0 }
+    Decrement id -> 
+      List.map (\ c -> if c.id == id then { c | value = c.value - 1 } else c ) model  
 
-counterView value = 
+counterView : CounterModel -> Html Msg
+counterView {id, value} = 
   div [ class "counter" ] 
-    [ p [ class "counter-value" ] [ text value ]  
-    , button [ onClick Increment ] [ text "+" ]
-    , button [ onClick Decrement ] [ text "-" ]
+    [ p [ class "counter-value" ] [ text (toString value) ]  
+    , button [ onClick <| Increment id ] [ text "+" ]
+    , button [ onClick <| Decrement id ] [ text "-" ]
     ]
 
+view : Model -> Html Msg
 view model = 
   let 
-    counterValue = toString model.value
-  in 
-    counterView counterValue
+    counters = List.map counterView model
+  in
+    div [] counters
+
     
