@@ -17,15 +17,16 @@ type alias CounterModel =
   }
 
 type alias Model = List CounterModel
-type Msg = Increment Int | Decrement Int
+type Msg = Increment Int | Decrement Int | AddCounter | RemoveCounter
 -- Type Declarations
 
 model : Model 
 model = 
   [ { id = 1, value = 0 }
   , { id = 2, value = 0 }
+  , { id = 3, value = 0 }
+  , { id = 4, value = 0 }
   ]
-
 
 update : Msg -> Model -> Model
 update msg model = 
@@ -45,6 +46,12 @@ update msg model =
       Decrement id -> 
         decreaseItem id model
 
+      AddCounter -> 
+        (CounterModel 5 0)::model 
+
+      RemoveCounter -> 
+        List.tail model
+
 
 counterView : CounterModel -> Html Msg
 counterView {id, value} = 
@@ -59,6 +66,10 @@ view model =
   let 
     counters = List.map counterView model
   in
-    div [] counters
+    div [] 
+    [ button [ onClick AddCounter ] [ text "Add" ]
+    , button [ onClick RemoveCounter ] [ text "Remove" ]
+    , div [ class "counters-holder" ] counters
+    ]
 
     
