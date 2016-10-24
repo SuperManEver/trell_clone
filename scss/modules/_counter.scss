@@ -1,0 +1,16 @@
+.counter {
+  width : 80px;
+  background: white;
+  padding : 10px;
+  @include box-shadow(0.6);
+
+  .counter-value {
+    text-align: center;   
+    font-size : 35px;
+    margin: 16px 0;
+  }
+
+  button {
+    width : 50%;
+  }
+}
