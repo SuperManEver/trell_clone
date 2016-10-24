@@ -10,14 +10,15 @@ main =
     , update = update
     }
 
+-- Type Declarations
 type alias CounterModel = 
   { id : Int 
   , value : Int 
   }
 
 type alias Model = List CounterModel
-
 type Msg = Increment Int | Decrement Int
+-- Type Declarations
 
 model : Model 
 model = 
@@ -25,14 +26,25 @@ model =
   , { id = 2, value = 0 }
   ]
 
+
 update : Msg -> Model -> Model
 update msg model = 
-  case msg of 
-    Increment id -> 
-      List.map (\ c -> if c.id == id then { c | value = c.value + 1 } else c ) model 
+  let 
+    updateItem operand id model = 
+      List.map 
+        (\item -> if item.id == id then { item | value = operand item.value 1 } else item ) 
+        model
 
-    Decrement id -> 
-      List.map (\ c -> if c.id == id then { c | value = c.value - 1 } else c ) model  
+    increaseItem = updateItem (+)
+    decreaseItem = updateItem (-)
+  in 
+    case msg of 
+      Increment id -> 
+        increaseItem id model 
+
+      Decrement id -> 
+        decreaseItem id model
+
 
 counterView : CounterModel -> Html Msg
 counterView {id, value} = 
