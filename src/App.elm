@@ -1,14 +1,24 @@
 import Html exposing (..)
 import Html.Attributes exposing (class)
-import Html.App exposing (beginnerProgram)
+import Html.App exposing (program)
 import Html.Events exposing (onClick)
+import Random 
 
 main = 
-  beginnerProgram
-    { model = model
+  program
+    { init = init
     , view = view 
     , update = update
+    , subscriptions = subscriptions
     }
+
+init : (Model, Cmd Msg)
+init = 
+  ([ { id = 1, value = 0 }
+  , { id = 2, value = 0 }
+  , { id = 3, value = 0 }
+  , { id = 4, value = 0 }
+  ], Cmd.none)
 
 -- Type Declarations
 type alias CounterModel = 
@@ -17,18 +27,10 @@ type alias CounterModel =
   }
 
 type alias Model = List CounterModel
-type Msg = Increment Int | Decrement Int | AddCounter | RemoveCounter
+type Msg = Increment Int | Decrement Int | AddCounter Int | RemoveCounter | CreateCounter
 -- Type Declarations
 
-model : Model 
-model = 
-  [ { id = 1, value = 0 }
-  , { id = 2, value = 0 }
-  , { id = 3, value = 0 }
-  , { id = 4, value = 0 }
-  ]
-
-update : Msg -> Model -> Model
+update : Msg -> Model -> (Model, Cmd Msg)
 update msg model = 
   let 
     updateItem operand id model = 
@@ -41,17 +43,24 @@ update msg model =
   in 
     case msg of 
       Increment id -> 
-        increaseItem id model 
+        (increaseItem id model, Cmd.none) 
 
       Decrement id -> 
-        decreaseItem id model
+        (decreaseItem id model, Cmd.none)
 
-      AddCounter -> 
-        (CounterModel 5 0)::model 
+      AddCounter id -> 
+        ((CounterModel id 0)::model, Cmd.none) 
 
       RemoveCounter -> 
-        model
+        (model, Cmd.none)
 
+      CreateCounter -> 
+        (model, Random.generate AddCounter (Random.int 1 100000))
+
+
+subscriptions : Model -> Sub Msg 
+subscriptions model =
+  Sub.none
 
 counterView : CounterModel -> Html Msg
 counterView {id, value} = 
@@ -67,7 +76,7 @@ view model =
     counters = List.map counterView model
   in
     div [] 
-    [ button [ onClick AddCounter ] [ text "Add" ]
+    [ button [ onClick CreateCounter ] [ text "Add" ]
     , button [ onClick RemoveCounter] [ text "Remove" ]
     , div [ class "counters-holder" ] counters
     ]
