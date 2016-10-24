@@ -50,7 +50,7 @@ update msg model =
         (CounterModel 5 0)::model 
 
       RemoveCounter -> 
-        List.tail model
+        model
 
 
 counterView : CounterModel -> Html Msg
@@ -68,7 +68,7 @@ view model =
   in
     div [] 
     [ button [ onClick AddCounter ] [ text "Add" ]
-    , button [ onClick RemoveCounter ] [ text "Remove" ]
+    , button [ onClick RemoveCounter] [ text "Remove" ]
     , div [ class "counters-holder" ] counters
     ]
 
