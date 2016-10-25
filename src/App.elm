@@ -69,15 +69,25 @@ counterView {id, value} =
     , button [ onClick <| Decrement id ] [ text "-" ]
     ]
 
-view : Model -> Html Msg
-view model = 
+countersDisplay : Model -> Html Msg
+countersDisplay model = 
   let 
     counters = List.map counterView model
   in
+    case counters of 
+      [] -> 
+        div [] [ text "No counters" ]
+
+      _ -> 
+        div [ class "counters-holder" ] counters
+
+view : Model -> Html Msg
+view model = 
+  
     div [] 
-    [ button [ onClick CreateCounter ] [ text "Add" ]
-    , button [ onClick RemoveCounter] [ text "Remove" ]
-    , div [ class "counters-holder" ] counters
-    ]
+      [ button [ onClick CreateCounter ] [ text "Add" ]
+      , button [ onClick RemoveCounter] [ text "Remove" ]
+      , countersDisplay model
+      ]
 
     
