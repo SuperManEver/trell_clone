@@ -16,8 +16,6 @@ init : (Model, Cmd Msg)
 init = 
   ([ { id = 1, value = 0 }
   , { id = 2, value = 0 }
-  , { id = 3, value = 0 }
-  , { id = 4, value = 0 }
   ], Cmd.none)
 
 -- Type Declarations
@@ -40,6 +38,7 @@ update msg model =
 
     increaseItem = updateItem (+)
     decreaseItem = updateItem (-)
+    tl = List.drop 1
   in 
     case msg of 
       Increment id -> 
@@ -52,7 +51,7 @@ update msg model =
         ((CounterModel id 0)::model, Cmd.none) 
 
       RemoveCounter -> 
-        (model, Cmd.none)
+        (tl model, Cmd.none)
 
       CreateCounter -> 
         (model, Random.generate AddCounter (Random.int 1 100000))
