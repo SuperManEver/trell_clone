@@ -14,9 +14,10 @@ main =
 
 init : (Model, Cmd Msg)
 init = 
-  ([ { id = 1, value = 0 }
-  , { id = 2, value = 0 }
-  ], Cmd.none)
+  let 
+    counters = [ { id = 1, value = 0 }, { id = 2, value = 0 } ]
+  in 
+    (counters, Cmd.none)
 
 -- Type Declarations
 type alias CounterModel = 
@@ -83,11 +84,10 @@ countersDisplay model =
 
 view : Model -> Html Msg
 view model = 
-  
-    div [] 
-      [ button [ onClick CreateCounter ] [ text "Add" ]
-      , button [ onClick RemoveCounter] [ text "Remove" ]
-      , countersDisplay model
-      ]
+  div [] 
+    [ button [ onClick CreateCounter ] [ text "Add" ]
+    , button [ onClick RemoveCounter] [ text "Remove" ]
+    , countersDisplay model
+    ]
 
     
