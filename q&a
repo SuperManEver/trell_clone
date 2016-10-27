@@ -1,0 +1,19 @@
+Hello. 
+
+I need some help. I don't know is it right place to ask this kind of question, but I gonna try.  
+
+So, long story short. I'm a beginner in Elm and I learn how to build things.  My goal for this project is to learn how to create Elm app which can contains kinda like applications with its own state. Ideally, what I would like to find is a way how to nest Elm Architectures inside Elm Architecture, so that nested Elm Architecture would contains its own model/view/update logic independent of other Elm Architectures. 
+
+So, in pursuing this goal designed simple application, but it allows me to experiment with different options/variants which I called `dynamic counters`. Essentially its the same as first and most basic example of Elm Architecture where you can increase/decrease value of counter, but it also allows to add/remove counters dynamically. Each counter has it's own state that changes independently of other counters state.
+
+Here completed implementation of application https://gist.github.com/SuperManEver/fb39754333fd185c808987b6123dca50
+
+What I'd like you to do is take a lot at my app and give some feedback. Especially, I'd like to hear from you how I can make it more modular. What I mean by that is the following.  Currently it plays dual role, it acts as container for counters with ability to add/remove them and also it contains logic that allows each of them to change their state.  As I said earlier, ideally I'd like to nest Elm Architecture into another, so each counter will acts kinda like instance of Counter app. 
+
+So with your help I'd like to move current implementation to this desired implementation as much as possible :slightly_smiling_face:
+
+
+-> mapping the messages of your child module to the parent mostly
+
+https://www.elm-tutorial.org/en/02-elm-arch/06-composing.html
+https://www.elm-tutorial.org/en/02-elm-arch/07-composing-2.html
