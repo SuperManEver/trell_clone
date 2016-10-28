@@ -1,5 +1,6 @@
 .counters-holder {
   margin-top : 10px;
+
   .counter {
     @include box-shadow(0.6);
     width : 80px;
@@ -18,4 +19,5 @@
       width : 50%;
     }
   }
+  
 }

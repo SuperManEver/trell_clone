@@ -1,14 +1,16 @@
 import Html exposing (..)
 import Html.App as App exposing (program)
+import Html.Attributes exposing (class)
 import Counter
+import List
 
 -- MODEL
 type alias AppModel = 
-  { counterModel : Counter.Model }
+  { counterModels : List Counter.Model }
 
 initialModel : AppModel 
 initialModel = 
-  { counterModel = Counter.model }
+  { counterModels = [Counter.model] }
   -- counterModels = [Counter.model]
 
 init : (AppModel, Cmd Msg)
@@ -22,16 +24,18 @@ type Msg =
   CounterMsg Counter.Msg  
 
 
-
 -- UPDATE 
 update : Msg -> AppModel -> ( AppModel, Cmd Msg)
 update msg model =
   case msg of 
     CounterMsg subMsg ->
+      model
+      {- 
       let 
         ( updatedCounterModel, counterCmd ) = Counter.update subMsg model.counterModel
       in
         ( { model | counterModel = updatedCounterModel }, Cmd.map CounterMsg counterCmd )
+      -}
 
 
 -- SUBSCRIPTIONS
@@ -39,13 +43,28 @@ subscriptions : AppModel -> Sub Msg
 subscriptions model = 
   Sub.none
 
--- VIEW 
+
+{-
+
 view : AppModel -> Html Msg
 view model = 
-  div [] 
+  div [ class "counters-holder" ] 
     [ App.map CounterMsg (Counter.view model.counterModel) -- ???
     , App.map CounterMsg (Counter.view model.counterModel) -- ???
     ]
+
+-}  
+
+-- VIEW 
+view : AppModel -> Html Msg
+view model = 
+  let 
+    counters = List.map 
+      (\ counterModel -> App.map CounterMsg (Counter.view counterModel)) 
+      model.counterModels
+  in
+    div [ class "counters-holder" ]  
+      counters
 
 main = 
   program
