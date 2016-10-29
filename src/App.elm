@@ -12,7 +12,7 @@ type alias AppModel =
 
 initialModel : AppModel 
 initialModel = 
-  { counterModels = [{ id = 1, value = 2}, { id = 1, value = 2}] }
+  { counterModels = [{ id = 1, value = 2}, { id = 2, value = 2}] }
   -- counterModels = [Counter.model]
 
 init : (AppModel, Cmd Msg)
@@ -50,21 +50,10 @@ update msg model =
         ({ model | counterModels = counters }, Cmd.none)
 
     CounterMsg subMsg -> 
-      case subMsg of 
-        Counter.Increment id -> 
-          let 
-            counterModel = List.head (List.filter (\ c -> c.id == id ) model.counterModels)
-            ( updatedCounterModel, counterCmd ) = Counter.update subMsg counterModel
-            counters = List.map (\ c -> if c.id == id then updatedCounterModel else c ) model.counterModels
-          in
-            ( { model | counterModels = counters }, Cmd.map CounterMsg counterCmd )
-
-        Counter.Decrement id -> 
-          (model, Cmd.none)
-      {--          
-        
-
-      --}
+      let 
+         ( updatedCounterModels, counterCmd ) = Counter.update subMsg model.counterModels
+      in
+        ({ model | counterModels = updatedCounterModels }, Cmd.map CounterMsg counterCmd )
 
 
 -- SUBSCRIPTIONS

@@ -3,6 +3,7 @@ module Counter exposing (..)
 import Html exposing (Html, div, p, text, button)
 import Html.Events exposing (onClick)
 import Html.Attributes exposing (class)
+import List
 
 type alias Model = 
   { id : Int
@@ -11,22 +12,21 @@ type alias Model =
 
 type Msg = Increment Int | Decrement Int
 
-update : Msg -> Maybe Model -> (Model, Cmd Msg)
+update : Msg -> List Model -> (List Model, Cmd Msg)
 update msg model =
+  let 
+    updateItem op xs id = 
+      List.map (\ c -> if c.id == id then {c | value = op c.value 1} else c ) xs
+
+    increaseItem = updateItem (+) 
+    decreaseItem = updateItem (-) 
+  in
   case msg of 
-    Increment id -> 
-      case model of 
-        Just value -> 
-          ({ model | value = model.value + 1}, Cmd.none)
-        Nothing ->
-          ({ id = 0, value = 0}, Cmd.none)
+    Increment id ->   
+      (increaseItem model id, Cmd.none)
 
     Decrement id -> 
-      case model of 
-        Just value -> 
-          ({ model | value = model.value - 1}, Cmd.none)
-        Nothing ->
-          ({ id = 0, value = 0}, Cmd.none)
+      (decreaseItem model id, Cmd.none)
 
 view : Model -> Html Msg
 view {id, value} = 
