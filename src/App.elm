@@ -58,47 +58,47 @@ update msg model =
         (\task -> if task.id == id then (diff task) else task) 
         model.tasks
   in 
-  case msg of 
-    UpdateInput val -> 
-      ({ model | inputValue = val }, Cmd.none)
+    case msg of 
+      UpdateInput val -> 
+        ({ model | inputValue = val }, Cmd.none)
 
 
-    AddTask genId -> 
-      let 
-        newTask = Task genId model.inputValue False False
-      in
-        ({ model | tasks = newTask::model.tasks, inputValue = "" }, Cmd.none)
+      AddTask genId -> 
+        let 
+          newTask = Task genId model.inputValue False False
+        in
+          ({ model | tasks = newTask::model.tasks, inputValue = "" }, Cmd.none)
 
 
-    CreateTask -> 
-      (model, Random.generate AddTask (Random.int 1 100000))
+      CreateTask -> 
+        (model, Random.generate AddTask (Random.int 1 100000))
 
-    EditTask id ->
-      let 
-        xs = updateTasks (\ task -> {task | editing = not task.editing} ) id
-      in
-        ({ model | tasks = xs }, Cmd.none)
+      EditTask id ->
+        let 
+          xs = updateTasks (\ task -> {task | editing = not task.editing} ) id
+        in
+          ({ model | tasks = xs }, Cmd.none)
 
-    ToggleTask id -> 
-      let 
-        xs = updateTasks (\ task -> {task | completed = not task.completed}) id 
-      in 
-        ({ model | tasks = xs }, Cmd.none)
+      ToggleTask id -> 
+        let 
+          xs = updateTasks (\ task -> {task | completed = not task.completed}) id 
+        in 
+          ({ model | tasks = xs }, Cmd.none)
 
-    UpdateTask str id -> 
-      let 
-        xs = updateTasks (\ task -> {task | text = str}) id
-      in
-        ({ model | tasks = xs }, Cmd.none)
+      UpdateTask str id -> 
+        let 
+          xs = updateTasks (\ task -> {task | text = str}) id
+        in
+          ({ model | tasks = xs }, Cmd.none)
 
-    RemoveTask id -> 
-      let 
-        updatedTasks = List.filter (\task -> task.id /= id) model.tasks
-      in
-        ({ model | tasks = updatedTasks }, Cmd.none)
+      RemoveTask id -> 
+        let 
+          xs = List.filter (\task -> task.id /= id) model.tasks
+        in
+          ({ model | tasks = xs }, Cmd.none)
 
-    FilterTasks val -> 
-      ({ model | filter = val}, Cmd.none)
+      FilterTasks val -> 
+        ({ model | filter = val}, Cmd.none)
 
 taskInput inputValue = 
   div [ class "input-group" ] 
