@@ -12,10 +12,11 @@ main = program
 
 init : (Model, Cmd Msg) 
 init = 
-  (Model [ (Task "buy bread" False), (Task "buy milk" False) ] "", Cmd.none)
+  (Model [ (Task 1 "buy bread" False), (Task 2 "buy milk" False) ] "", Cmd.none)
 
 type alias Task = 
-  { text : String 
+  { id : Int
+  , text : String 
   , completed : Bool 
   }
 
@@ -24,7 +25,7 @@ type alias Model =
   , inputValue : String 
   }
 
-type Msg = UpdateInput String | AddTask
+type Msg = UpdateInput String | AddTask | ToggleTask Int
 
 subscriptions : Model -> Sub Msg
 subscriptions model = 
@@ -39,9 +40,18 @@ update msg model =
 
     AddTask -> 
       let 
-        newTask = Task model.inputValue False
+        newTask = Task 3 model.inputValue False
       in
         ({ model | tasks = newTask::model.tasks, inputValue = "" }, Cmd.none)
+
+    ToggleTask id -> 
+      let 
+        updatedTasks = 
+          List.map 
+            (\task -> if task.id == id then {task | completed = not task.completed} else task) 
+            model.tasks
+      in
+        ({ model | tasks = updatedTasks }, Cmd.none)
 
 
 taskInput inputValue = 
@@ -51,10 +61,16 @@ taskInput inputValue =
       [ button [ onClick AddTask, class "btn btn-primary", type' "button" ] [ text "Add" ] ] 
     ]
 
+
 taskItem task = 
+  let 
+    textClasses = if task.completed then "completed" else ""
+  in
   div [ class "task-item" ] 
-    [ p [] [ text task.text ] 
+    [ input [ type' "checkbox", onClick (ToggleTask task.id) ] []
+    , p [ class textClasses ] [ text task.text ] 
     ]
+
 
 view : Model -> Html Msg 
 view {inputValue, tasks} = 
