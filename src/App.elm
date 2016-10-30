@@ -16,7 +16,7 @@ init =
   let 
     tasks = [ (Task 1 "buy bread" False False), (Task 2 "buy milk" False False) ]
   in
-    (Model tasks "", Cmd.none)
+    (Model tasks "" All, Cmd.none)
 
 
 type alias Task = 
@@ -30,7 +30,10 @@ type alias Task =
 type alias Model = 
   { tasks : List Task
   , inputValue : String 
+  , filter : FilterOptions
   }
+
+type FilterOptions = All | Active | Completed
 
 type Msg 
   = UpdateInput String 
@@ -40,6 +43,8 @@ type Msg
   | EditTask Int
   | UpdateTask String Int
   | RemoveTask Int
+  | FilterTasks FilterOptions
+
 
 subscriptions : Model -> Sub Msg
 subscriptions model = 
@@ -97,6 +102,9 @@ update msg model =
       in
         ({ model | tasks = updatedTasks }, Cmd.none)
 
+    FilterTasks val -> 
+      ({ model | filter = val}, Cmd.none)
+
 taskInput inputValue = 
   div [ class "input-group" ] 
     [ form [ onSubmit CreateTask ] 
@@ -127,15 +135,29 @@ taskItem task =
 filterControls : Html Msg 
 filterControls = 
   div [ class "btn-group btn-group-xs" ] 
-    [ button [ type' "button", class "btn btn-default"  ] [ text "Active" ]
-    , button [ type' "button", class "btn btn-default"  ] [ text "All" ]
-    , button [ type' "button", class "btn btn-default"  ] [ text "Completed" ]
+    [ button [ type' "button", class "btn btn-default", onClick (FilterTasks All) ] [ text "All" ]
+    , button [ type' "button", class "btn btn-default", onClick (FilterTasks Active)  ] [ text "Active" ]
+    , button [ type' "button", class "btn btn-default", onClick (FilterTasks Completed)  ] [ text "Completed" ]
     ]
 
 view : Model -> Html Msg 
-view {inputValue, tasks} = 
+view {inputValue, tasks, filter} = 
   let 
-    tasksList = List.map (\ task -> taskItem task ) tasks
+    tasksList = 
+      case filter of 
+        All -> 
+          List.map (\ task -> taskItem task ) tasks
+
+        Active -> 
+          tasks 
+            |> List.filter (\ task -> not task.completed )
+            |> List.map (\ task -> taskItem task ) 
+
+        Completed -> 
+          tasks 
+            |> List.filter (\ task -> task.completed )
+            |> List.map (\ task -> taskItem task ) 
+
   in 
     div [ class "tasks-container" ]  
       [ taskInput inputValue
