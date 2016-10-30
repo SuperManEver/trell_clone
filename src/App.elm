@@ -2,6 +2,7 @@ import Html exposing (..)
 import Html.App exposing (program)
 import Html.Attributes exposing (value, class, placeholder, type')
 import Html.Events exposing (onInput, onSubmit, onClick)
+import Random
 
 main = program
   { init = init 
@@ -30,7 +31,7 @@ type alias Model =
   , inputValue : String 
   }
 
-type Msg = UpdateInput String | AddTask | ToggleTask Int
+type Msg = UpdateInput String | AddTask Int | ToggleTask Int | CreateTask
 
 subscriptions : Model -> Sub Msg
 subscriptions model = 
@@ -41,13 +42,16 @@ update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =  
   case msg of 
     UpdateInput val -> 
-      ({model | inputValue = val}, Cmd.none)
+      ({ model | inputValue = val }, Cmd.none)
 
-    AddTask -> 
+    AddTask genId -> 
       let 
-        newTask = Task 3 model.inputValue False
+        newTask = Task genId model.inputValue False
       in
         ({ model | tasks = newTask::model.tasks, inputValue = "" }, Cmd.none)
+
+    CreateTask -> 
+      (model, Random.generate AddTask (Random.int 1 100000))
 
     ToggleTask id -> 
       let 
@@ -61,10 +65,10 @@ update msg model =
 
 taskInput inputValue = 
   div [ class "input-group" ] 
-    [ form [ onSubmit AddTask ] 
+    [ form [ onSubmit CreateTask ] 
       [ input [ value inputValue, onInput UpdateInput, class "form-control", type' "text", placeholder "Enter task ..." ] [] ]
     , span [ class "input-group-btn" ] 
-      [ button [ onClick AddTask, class "btn btn-primary", type' "button" ] [ text "Add" ] ] 
+      [ button [ onClick CreateTask, class "btn btn-primary", type' "button" ] [ text "Add" ] ] 
     ]
 
 
@@ -72,10 +76,10 @@ taskItem task =
   let 
     textClasses = if task.completed then "completed" else ""
   in
-  div [ class "task-item" ] 
-    [ input [ type' "checkbox", onClick (ToggleTask task.id) ] []
-    , p [ class textClasses ] [ text task.text ] 
-    ]
+    div [ class "task-item" ] 
+      [ input [ type' "checkbox", onClick (ToggleTask task.id) ] []
+      , p [ class textClasses ] [ text task.text ] 
+      ]
 
 
 view : Model -> Html Msg 
