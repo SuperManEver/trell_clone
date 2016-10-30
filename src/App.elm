@@ -14,7 +14,7 @@ main = program
 init : (Model, Cmd Msg) 
 init = 
   let 
-    tasks = [ (Task 1 "buy bread" False False), (Task 2 "buy milk" False True) ]
+    tasks = [ (Task 1 "buy bread" False False), (Task 2 "buy milk" False False) ]
   in
     (Model tasks "", Cmd.none)
 
@@ -39,6 +39,7 @@ type Msg
   | CreateTask 
   | EditTask Int
   | UpdateTask String Int
+  | RemoveTask Int
 
 subscriptions : Model -> Sub Msg
 subscriptions model = 
@@ -90,6 +91,11 @@ update msg model =
       in
         ({ model | tasks = updatedTasks }, Cmd.none)
 
+    RemoveTask id -> 
+      let 
+        updatedTasks = List.filter (\task -> task.id /= id) model.tasks
+      in
+        ({ model | tasks = updatedTasks }, Cmd.none)
 
 taskInput inputValue = 
   div [ class "input-group" ] 
@@ -113,7 +119,7 @@ taskItem task =
     div [ class "task-item" ] 
       [ input [ type' "checkbox", onClick (ToggleTask task.id) ] []
       , currentDisplay
-      , span [ class "glyphicon glyphicon-trash controls" ] [] 
+      , span [ class "glyphicon glyphicon-trash controls", onClick (RemoveTask task.id) ] [] 
       , span [ class "glyphicon glyphicon-pencil controls", onClick (EditTask task.id) ] [] 
       ]
 
