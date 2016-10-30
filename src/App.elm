@@ -1,7 +1,7 @@
 import Html exposing (..)
 import Html.App exposing (program)
 import Html.Attributes exposing (value, class, placeholder, type')
-import Html.Events exposing (onInput, onClick)
+import Html.Events exposing (onInput, onSubmit, onClick)
 
 main = program
   { init = init 
@@ -12,13 +12,18 @@ main = program
 
 init : (Model, Cmd Msg) 
 init = 
-  (Model [ (Task 1 "buy bread" False), (Task 2 "buy milk" False) ] "", Cmd.none)
+  let 
+    tasks = [ (Task 1 "buy bread" False), (Task 2 "buy milk" False) ]
+  in
+    (Model tasks "", Cmd.none)
+
 
 type alias Task = 
   { id : Int
   , text : String 
   , completed : Bool 
   }
+
 
 type alias Model = 
   { tasks : List Task
@@ -56,7 +61,8 @@ update msg model =
 
 taskInput inputValue = 
   div [ class "input-group" ] 
-    [ input [ value inputValue, onInput UpdateInput, class "form-control", type' "text", placeholder "Enter task ..." ] []
+    [ form [ onSubmit AddTask ] 
+      [ input [ value inputValue, onInput UpdateInput, class "form-control", type' "text", placeholder "Enter task ..." ] [] ]
     , span [ class "input-group-btn" ] 
       [ button [ onClick AddTask, class "btn btn-primary", type' "button" ] [ text "Add" ] ] 
     ]
