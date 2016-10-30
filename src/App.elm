@@ -41,7 +41,14 @@ update msg model =
       let 
         newTask = Task model.inputValue False
       in
-        ({ model | tasks = newTask::model.tasks }, Cmd.none)
+        ({ model | tasks = newTask::model.tasks, inputValue = "" }, Cmd.none)
+
+taskInput inputValue = 
+  div [ class "input-group" ] 
+    [ input [ value inputValue, onInput UpdateInput, class "form-control", type' "text", placeholder "Enter task ..." ] []
+    , span [ class "input-group-btn" ] 
+      [ button [ onClick AddTask, class "btn btn-primary", type' "button" ] [ text "Add" ] ] 
+    ]
 
 view : Model -> Html Msg 
 view {inputValue, tasks} = 
@@ -50,11 +57,7 @@ view {inputValue, tasks} =
     tasksList = List.map (\ task -> taskItem task ) tasks
   in 
     div [ class "tasks-container" ]  
-      [ div [ class "input-group" ] 
-        [ input [ value inputValue, onInput UpdateInput, class "form-control", type' "text", placeholder "Enter task ..." ] []
-        , span [ class "input-group-btn" ] 
-          [ button [ onClick AddTask, class "btn btn-primary", type' "button" ] [ text "Add" ] ] 
-        ]
+      [ taskInput inputValue
       , div [ class "tasks-list" ] tasksList
       ]
 
