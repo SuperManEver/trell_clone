@@ -2,4 +2,22 @@
   width : 340px;
   margin : 0 auto;
   margin-top : 100px;
+
+  .tasks-list {
+    margin-top: 6px;
+
+    .task-item {
+      background: white;
+      padding : 6px 8px;
+      margin-bottom: 6px;
+      @include border-radius(3px);
+
+      p { 
+        font-size : 0.9em;
+        color : Gray;
+      }
+
+    }
+  }
+
 }

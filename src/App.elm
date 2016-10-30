@@ -12,7 +12,7 @@ main = program
 
 init : (Model, Cmd Msg) 
 init = 
-  (Model [] "", Cmd.none)
+  (Model [ (Task "buy bread" False), (Task "buy milk" False) ] "", Cmd.none)
 
 type alias Task = 
   { text : String 
@@ -43,6 +43,7 @@ update msg model =
       in
         ({ model | tasks = newTask::model.tasks, inputValue = "" }, Cmd.none)
 
+
 taskInput inputValue = 
   div [ class "input-group" ] 
     [ input [ value inputValue, onInput UpdateInput, class "form-control", type' "text", placeholder "Enter task ..." ] []
@@ -50,10 +51,14 @@ taskInput inputValue =
       [ button [ onClick AddTask, class "btn btn-primary", type' "button" ] [ text "Add" ] ] 
     ]
 
+taskItem task = 
+  div [ class "task-item" ] 
+    [ p [] [ text task.text ] 
+    ]
+
 view : Model -> Html Msg 
 view {inputValue, tasks} = 
   let 
-    taskItem task = div [] [ p [] [ text task.text ] ]
     tasksList = List.map (\ task -> taskItem task ) tasks
   in 
     div [ class "tasks-container" ]  
