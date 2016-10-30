@@ -50,9 +50,14 @@ subscriptions : Model -> Sub Msg
 subscriptions model = 
   Sub.none
 
-
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =  
+  let
+    updateTasks diff id = 
+      List.map 
+        (\task -> if task.id == id then (diff task) else task) 
+        model.tasks
+  in 
   case msg of 
     UpdateInput val -> 
       ({ model | inputValue = val }, Cmd.none)
@@ -68,33 +73,23 @@ update msg model =
     CreateTask -> 
       (model, Random.generate AddTask (Random.int 1 100000))
 
-
     EditTask id ->
       let 
-        updatedTasks = 
-          List.map 
-            (\task -> if task.id == id then {task | editing = not task.editing} else task) 
-            model.tasks
+        xs = updateTasks (\ task -> {task | editing = not task.editing} ) id
       in
-        ({ model | tasks = updatedTasks }, Cmd.none)
+        ({ model | tasks = xs }, Cmd.none)
 
     ToggleTask id -> 
       let 
-        updatedTasks = 
-          List.map 
-            (\task -> if task.id == id then {task | completed = not task.completed} else task) 
-            model.tasks
-      in
-        ({ model | tasks = updatedTasks }, Cmd.none)
+        xs = updateTasks (\ task -> {task | completed = not task.completed}) id 
+      in 
+        ({ model | tasks = xs }, Cmd.none)
 
     UpdateTask str id -> 
       let 
-        updatedTasks = 
-          List.map 
-            (\task -> if task.id == id then {task | text = str } else task) 
-            model.tasks
+        xs = updateTasks (\ task -> {task | text = str}) id
       in
-        ({ model | tasks = updatedTasks }, Cmd.none)
+        ({ model | tasks = xs }, Cmd.none)
 
     RemoveTask id -> 
       let 
