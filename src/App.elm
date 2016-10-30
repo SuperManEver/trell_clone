@@ -124,6 +124,14 @@ taskItem task =
       ]
 
 
+filterControls : Html Msg 
+filterControls = 
+  div [ class "btn-group btn-group-xs" ] 
+    [ button [ type' "button", class "btn btn-default"  ] [ text "Active" ]
+    , button [ type' "button", class "btn btn-default"  ] [ text "All" ]
+    , button [ type' "button", class "btn btn-default"  ] [ text "Completed" ]
+    ]
+
 view : Model -> Html Msg 
 view {inputValue, tasks} = 
   let 
@@ -132,6 +140,7 @@ view {inputValue, tasks} =
     div [ class "tasks-container" ]  
       [ taskInput inputValue
       , div [ class "tasks-list" ] tasksList
+      , filterControls 
       ]
 
 
