@@ -23,7 +23,32 @@
         }
       }
 
-    }
-  }
+      span.controls {
+        float : right;
+        margin-left : 6px;
+        font-size : 0.8em;
+        padding-top: 4px;
+
+        &:hover {
+          opacity: 0.8;
+          cursor : pointer;
+        }
+      }
+
+      form {
+        display: inline-block;
+      }
+
+      input {
+        margin-left : 8px;
+        padding-left : 4px; 
+        color : Gray;
+        font-size : 0.9em;
+        margin-top : -2px;
+      }
+
+    } // .task-item
+
+  } // .tasks-list
 
 }

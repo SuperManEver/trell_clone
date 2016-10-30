@@ -14,7 +14,7 @@ main = program
 init : (Model, Cmd Msg) 
 init = 
   let 
-    tasks = [ (Task 1 "buy bread" False), (Task 2 "buy milk" False) ]
+    tasks = [ (Task 1 "buy bread" False False), (Task 2 "buy milk" False True) ]
   in
     (Model tasks "", Cmd.none)
 
@@ -23,6 +23,7 @@ type alias Task =
   { id : Int
   , text : String 
   , completed : Bool 
+  , editing : Bool
   }
 
 
@@ -31,7 +32,13 @@ type alias Model =
   , inputValue : String 
   }
 
-type Msg = UpdateInput String | AddTask Int | ToggleTask Int | CreateTask
+type Msg 
+  = UpdateInput String 
+  | AddTask Int 
+  | ToggleTask Int 
+  | CreateTask 
+  | EditTask Int
+  | UpdateTask String Int
 
 subscriptions : Model -> Sub Msg
 subscriptions model = 
@@ -44,20 +51,41 @@ update msg model =
     UpdateInput val -> 
       ({ model | inputValue = val }, Cmd.none)
 
+
     AddTask genId -> 
       let 
-        newTask = Task genId model.inputValue False
+        newTask = Task genId model.inputValue False False
       in
         ({ model | tasks = newTask::model.tasks, inputValue = "" }, Cmd.none)
 
+
     CreateTask -> 
       (model, Random.generate AddTask (Random.int 1 100000))
+
+
+    EditTask id ->
+      let 
+        updatedTasks = 
+          List.map 
+            (\task -> if task.id == id then {task | editing = not task.editing} else task) 
+            model.tasks
+      in
+        ({ model | tasks = updatedTasks }, Cmd.none)
 
     ToggleTask id -> 
       let 
         updatedTasks = 
           List.map 
             (\task -> if task.id == id then {task | completed = not task.completed} else task) 
+            model.tasks
+      in
+        ({ model | tasks = updatedTasks }, Cmd.none)
+
+    UpdateTask str id -> 
+      let 
+        updatedTasks = 
+          List.map 
+            (\task -> if task.id == id then {task | text = str } else task) 
             model.tasks
       in
         ({ model | tasks = updatedTasks }, Cmd.none)
@@ -75,10 +103,18 @@ taskInput inputValue =
 taskItem task = 
   let 
     textClasses = if task.completed then "completed" else ""
+    saveUpdates str = UpdateTask str task.id
+
+    currentDisplay = 
+      if task.editing 
+      then form [ onSubmit (EditTask task.id) ] [ input [ value task.text, onInput saveUpdates ] [] ]
+      else p [ class textClasses ] [ text task.text ] 
   in
     div [ class "task-item" ] 
       [ input [ type' "checkbox", onClick (ToggleTask task.id) ] []
-      , p [ class textClasses ] [ text task.text ] 
+      , currentDisplay
+      , span [ class "glyphicon glyphicon-trash controls" ] [] 
+      , span [ class "glyphicon glyphicon-pencil controls", onClick (EditTask task.id) ] [] 
       ]
 
 
