@@ -1,6 +1,21 @@
 .decks-container {
-  padding-top : 40px;
+  display: inline-block;
 }
+
+.deck {
+  display: inline-block;
+  width : 250px;
+  background: #f5f5f5;
+  @include border-radius(3px);
+  padding : 6px;
+  font-weight : bold;
+  margin-right : 8px;
+
+  p {
+    color : Gray;
+  }
+
+} // .deck
 
 .add-deck {
   padding : 5px;
@@ -35,7 +50,7 @@
       padding : 3px 12px;
     }  
   }
-}
+} // .add-deckq
 
 .new-deck {
   display: inline-block;
@@ -47,10 +62,5 @@
   &:hover {
     background : gainsBoro;
   }
-}
+} // .new-deck
 
-.deck {
-  width : 250px;
-  background: #f5f5f5;
-  @include border-radius(3px);
-}
