@@ -1,0 +1,12 @@
+@mixin input-shadow ($x, $y) {
+  border : 1px solid gainsBoro;
+    -webkit-box-shadow: 
+      inset 0 0 $x  rgba(0,0,0,0.1),
+            0 0 $y rgba(0,0,0,0.1); 
+    -moz-box-shadow: 
+      inset 0 0 $x  rgba(0,0,0,0.1),
+            0 0 $y rgba(0,0,0,0.1); 
+    box-shadow: 
+      inset 0 0 $x  rgba(0,0,0,0.1),
+            0 0 $y rgba(0,0,0,0.1); 
+}

@@ -1,5 +1,7 @@
 import Html exposing (..)
 import Html.App exposing (program)
+import Html.Attributes exposing (class)
+import Html.Events exposing (onClick)
 
 main = program 
   { init = init 
@@ -8,7 +10,9 @@ main = program
   , subscriptions = \_ -> Sub.none
   }
 
-type Msg = NoOp
+type Msg 
+  = NoOp
+  | ShowAddDeck
 
 type alias Deck = 
   { id : Int
@@ -17,7 +21,18 @@ type alias Deck =
 
 type alias Model = 
   { decks : List Deck
+  , showAddDeck : Bool
   }
+
+defaultModel : Model 
+defaultModel =
+  { decks = []
+  , showAddDeck = True
+  }
+
+init : (Model, Cmd Msg)
+init = 
+  defaultModel ! []
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model = 
@@ -25,7 +40,25 @@ update msg model =
     NoOp -> 
       model ! []
 
+    ShowAddDeck -> 
+      {model | showAddDeck = True } ! []
+
+addDeckView : Bool -> Html Msg 
+addDeckView show = 
+  if show 
+  then 
+    div [ class "deck add-deck" ] 
+      [ input [] [] 
+      , div [ class "controls" ] 
+        [ button [ class "btn btn-success btn-sm" ] [ text "Save" ]
+        , span [ class "glyphicon glyphicon-remove" ] []
+        ]
+      ]
+  else button [ class "new-deck btn btn-link", onClick ShowAddDeck ] [ text "Add a list ..."]  
 
 view : Model -> Html Msg 
 view model = 
-  div [] []      
+  div [ class "decks-container" ] 
+    [ div [ class "deck" ] [  ]
+    , addDeckView model.showAddDeck
+    ]      
