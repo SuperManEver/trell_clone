@@ -35,7 +35,7 @@ type alias Model =
 defaultModel : Model 
 defaultModel =
   { decks = [{id = 2, name = "Work"}, { id = 3, name="Hobby"}]
-  , showAddDeck = True
+  , showAddDeck = False
   , deckNameField = ""
   }
 
