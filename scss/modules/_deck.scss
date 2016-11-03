@@ -10,6 +10,7 @@
   padding : 6px;
   font-weight : bold;
   margin-right : 8px;
+  vertical-align: top;
 
   p {
     color : Gray;
@@ -19,6 +20,7 @@
 
 .add-deck {
   padding : 5px;
+  vertical-align: top;
 
   input {
     width : 100%;
@@ -53,6 +55,7 @@
 } // .add-deckq
 
 .new-deck {
+  vertical-align: top;
   display: inline-block;
   background: #f5f5f5;
   width : 250px;
