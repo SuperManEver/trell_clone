@@ -3,6 +3,7 @@ import Html.App exposing (program)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 
+
 main = program 
   { init = init 
   , view = view
@@ -10,9 +11,13 @@ main = program
   , subscriptions = \_ -> Sub.none
   }
 
-type Msg 
-  = NoOp
-  | ShowAddDeck
+
+init : (Model, Cmd Msg)
+init = 
+  defaultModel ! []
+
+
+-- MODEL 
 
 type alias Deck = 
   { id : Int
@@ -27,12 +32,17 @@ type alias Model =
 defaultModel : Model 
 defaultModel =
   { decks = []
-  , showAddDeck = True
+  , showAddDeck = False
   }
 
-init : (Model, Cmd Msg)
-init = 
-  defaultModel ! []
+
+-- UPDATE
+
+type Msg 
+  = NoOp
+  | ShowAddDeck
+  | HideAddDeck
+
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model = 
@@ -43,6 +53,10 @@ update msg model =
     ShowAddDeck -> 
       {model | showAddDeck = True } ! []
 
+    HideAddDeck -> 
+      {model | showAddDeck = False } ! []
+
+
 addDeckView : Bool -> Html Msg 
 addDeckView show = 
   if show 
@@ -51,10 +65,11 @@ addDeckView show =
       [ input [] [] 
       , div [ class "controls" ] 
         [ button [ class "btn btn-success btn-sm" ] [ text "Save" ]
-        , span [ class "glyphicon glyphicon-remove" ] []
+        , span [ class "glyphicon glyphicon-remove", onClick HideAddDeck ] []
         ]
       ]
   else button [ class "new-deck btn btn-link", onClick ShowAddDeck ] [ text "Add a list ..."]  
+
 
 view : Model -> Html Msg 
 view model = 
