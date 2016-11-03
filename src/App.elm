@@ -1,8 +1,10 @@
+import Dom
 import Html exposing (..)
 import Html.App exposing (program)
 import Html.Attributes exposing (class, value)
-import Html.Events exposing (onClick, onInput)
-
+import Html.Events exposing (onClick, onInput, on, keyCode)
+import Json.Decode as Json
+import Task
 
 main = program 
   { init = init 
@@ -61,7 +63,10 @@ update msg model =
       model ! []
 
     ShowAddDeck -> 
-      {model | showAddDeck = True } ! []
+      let 
+        focus = Dom.focus "newDeckInput"
+      in 
+        {model | showAddDeck = True } ! [Task.perform (\_ -> NoOp) (\_ -> NoOp) focus]
 
     HideAddDeck -> 
       {model | showAddDeck = False, deckNameField = "" } ! []
@@ -75,6 +80,16 @@ update msg model =
         , deckNameField = ""
         , showAddDeck = False} ! []
 
+onEnter : Msg -> Attribute Msg
+onEnter msg =
+  let
+    tagger code =
+      if code == 13 then
+        msg
+      else
+        NoOp
+  in
+    on "keydown" (Json.map tagger keyCode)
 
 -- VIEW
 addDeckView : Model -> Html Msg 
@@ -82,7 +97,7 @@ addDeckView {showAddDeck, deckNameField} =
   if showAddDeck 
   then 
     div [ class "deck add-deck" ] 
-      [ input [ value deckNameField, onInput UpdateDeckNameField ] [] 
+      [ input [ value deckNameField, onInput UpdateDeckNameField, onEnter CreateDeck, id "newDeckInput" ] [] 
       , div [ class "controls" ] 
         [ button [ class "btn btn-success btn-sm", onClick CreateDeck ] [ text "Save" ]
         , span [ class "glyphicon glyphicon-remove", onClick HideAddDeck ] []
@@ -102,7 +117,7 @@ view model =
   let 
     decks = List.map (\ deck -> deckView deck ) model.decks
   in
-    div [] 
+    div [ class "fluid-container" ] 
       [ div [ class "decks-container" ] decks
       , addDeckView model
       ]      
