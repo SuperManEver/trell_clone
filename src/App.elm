@@ -1,7 +1,7 @@
 import Dom
 import Html exposing (..)
 import Html.App exposing (program)
-import Html.Attributes exposing (class, value)
+import Html.Attributes exposing (class, value, id)
 import Html.Events exposing (onClick, onInput, on, keyCode)
 import Json.Decode as Json
 import Task
