@@ -1,10 +1,11 @@
 import Dom
 import Html exposing (..)
-import Html.App exposing (program)
+import Html.App as App exposing (program)
 import Html.Attributes exposing (class, value, id)
 import Html.Events exposing (onClick, onInput, on, keyCode)
 import Json.Decode as Json
 import Task
+import Deck
 
 main = program 
   { init = init 
@@ -21,30 +22,19 @@ init =
 
 -- MODEL 
 
-type alias Deck = 
-  { id : Int
-  , name : String
-  }
-
 type alias Model = 
-  { decks : List Deck
+  { decks : List Deck.Model
   , showAddDeck : Bool
   , deckNameField : String
   }
 
+
 defaultModel : Model 
 defaultModel =
-  { decks = [{id = 2, name = "Work"}, { id = 3, name="Hobby"}]
+  { decks = [ Deck.newDeck "Work", Deck.newDeck "Hobby" ]
   , showAddDeck = False
   , deckNameField = ""
   }
-
-newDeck : String -> Deck 
-newDeck name = 
-  { id = 1 
-  , name = name
-  }
-
 
 -- UPDATE
 
@@ -54,6 +44,7 @@ type Msg
   | HideAddDeck
   | UpdateDeckNameField String
   | CreateDeck
+  | DeckMsg Deck.Msg
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -76,9 +67,15 @@ update msg model =
 
     CreateDeck -> 
       {model 
-        | decks = model.decks ++ [newDeck model.deckNameField]
+        | decks = model.decks ++ [Deck.newDeck model.deckNameField]
         , deckNameField = ""
         , showAddDeck = False} ! []
+
+    DeckMsg subMsg -> 
+      let 
+        (updatedDecks, deckCmd) = Deck.update subMsg model.decks
+      in
+        ({ model | decks = updatedDecks}, Cmd.map DeckMsg deckCmd)
 
 
 onEnter : Msg -> Attribute Msg
@@ -109,17 +106,10 @@ addDeckView {showAddDeck, deckNameField} =
     button [ class "new-deck btn btn-link", onClick ShowAddDeck ] [ text "Add a list ..."]  
 
 
-deckView : Deck -> Html Msg
-deckView deck = 
-  div [ class "deck" ] 
-    [ p [] [ text deck.name ]
-    ]
-
-
 view : Model -> Html Msg 
 view model = 
   let 
-    decks = List.map (\ deck -> deckView deck ) model.decks
+    decks = List.map (\ deck -> App.map DeckMsg (Deck.view deck)) model.decks
   in
     div [ class "fluid-container" ] 
       [ div [ class "decks-container" ] decks
