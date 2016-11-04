@@ -80,6 +80,7 @@ update msg model =
         , deckNameField = ""
         , showAddDeck = False} ! []
 
+
 onEnter : Msg -> Attribute Msg
 onEnter msg =
   let
@@ -90,6 +91,7 @@ onEnter msg =
         NoOp
   in
     on "keydown" (Json.map tagger keyCode)
+
 
 -- VIEW
 addDeckView : Model -> Html Msg 
@@ -106,11 +108,13 @@ addDeckView {showAddDeck, deckNameField} =
   else 
     button [ class "new-deck btn btn-link", onClick ShowAddDeck ] [ text "Add a list ..."]  
 
+
 deckView : Deck -> Html Msg
 deckView deck = 
   div [ class "deck" ] 
     [ p [] [ text deck.name ]
     ]
+
 
 view : Model -> Html Msg 
 view model = 
