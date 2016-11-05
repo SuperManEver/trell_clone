@@ -77,7 +77,11 @@ update msg model =
           List.map 
             (\ deck -> 
               if deck.id == id 
-              then { deck | items = deck.items ++ [newItem deck.field], showAddItem = False } 
+              then { 
+                deck | items = deck.items ++ [newItem deck.field], 
+                showAddItem = False,
+                field = ""
+                } 
               else deck) 
             model
       in
@@ -113,11 +117,19 @@ addItemView {id, showAddItem, field} =
         ]
     else 
       button [ class "new-card btn btn-link", onClick (ShowAddItem id) ] [ text "Add a card ..."]  
+ 
 
+itemsListView : Model -> Html Msg 
+itemsListView {items} = 
+  let 
+    xs = List.map (\ item -> div [] [ text item.text ]) items
+  in
+    div [] xs
 
 view : Model -> Html Msg  
 view model = 
   div [ class "deck" ] 
     [ p [] [ text model.name ]
+    , itemsListView model
     , addItemView model
     ]
