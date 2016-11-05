@@ -15,7 +15,7 @@
   p {
     color : Gray;
   }
-
+  
   .new-card {
     width : 100%;
     vertical-align: top;
@@ -27,6 +27,10 @@
     &:hover {
       background : gainsBoro;
     }
+  } // .new-card
+
+  .item {
+    
   }
 
 } // .deck

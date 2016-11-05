@@ -32,7 +32,7 @@ type alias Model =
 
 defaultModel : Model 
 defaultModel =
-  { decks = [ Deck.newDeck 1 "Elm" False, Deck.newDeck 2 "Haskell" True ]
+  { decks = [ Deck.newDeck 1 "Elm" False [], Deck.newDeck 2 "Haskell" True [Deck.newItem "Hello", Deck.newItem "World"] ]
   , showAddDeck = False
   , deckNameField = ""
   }
@@ -69,9 +69,10 @@ update msg model =
 
     AddDeck id -> 
       {model 
-        | decks = model.decks ++ [Deck.newDeck id model.deckNameField False]
+        | decks = model.decks ++ [Deck.newDeck id model.deckNameField False []]
         , deckNameField = ""
-        , showAddDeck = False} ! []
+        , showAddDeck = False
+        } ! []
 
     CreateDeck -> 
       model ! [ Random.generate AddDeck (Random.int 1 100000) ]

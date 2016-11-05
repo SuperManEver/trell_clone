@@ -28,11 +28,11 @@ type alias Model =
   }
 
 
-newDeck : Int -> String -> Bool -> Model 
-newDeck id name show = 
+newDeck : Int -> String -> Bool -> List Item -> Model 
+newDeck id name show items = 
   { id = id
   , name = name
-  , items = []
+  , items = items
   , showAddItem = show
   , field = ""
   }  
@@ -77,10 +77,10 @@ update msg model =
           List.map 
             (\ deck -> 
               if deck.id == id 
-              then { 
-                deck | items = deck.items ++ [newItem deck.field], 
-                showAddItem = False,
-                field = ""
+              then 
+                { deck | items = deck.items ++ [newItem deck.field]
+                , showAddItem = False
+                , field = ""
                 } 
               else deck) 
             model
@@ -122,7 +122,7 @@ addItemView {id, showAddItem, field} =
 itemsListView : Model -> Html Msg 
 itemsListView {items} = 
   let 
-    xs = List.map (\ item -> div [] [ text item.text ]) items
+    xs = List.map (\ item -> div [ class "item" ] [ text item.text ]) items
   in
     div [] xs
 
