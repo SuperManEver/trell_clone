@@ -14,6 +14,7 @@
 
   p {
     color : Gray;
+    margin-bottom: 7px;
   }
   
   .new-card {
@@ -30,7 +31,13 @@
   } // .new-card
 
   .item {
-    
+    @include border-radius(2px);
+    background : white;
+    margin-bottom : 6px;
+    padding : 6px;
+    color : Gray;
+    font-weight : normal;
+    font-size : 0.9em;
   }
 
 } // .deck
