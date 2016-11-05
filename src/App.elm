@@ -32,7 +32,7 @@ type alias Model =
 
 defaultModel : Model 
 defaultModel =
-  { decks = [ Deck.newDeck 1 "Elm", Deck.newDeck 2 "Haskell" ]
+  { decks = [ Deck.newDeck 1 "Elm" False, Deck.newDeck 2 "Haskell" True ]
   , showAddDeck = False
   , deckNameField = ""
   }
@@ -69,7 +69,7 @@ update msg model =
 
     AddDeck id -> 
       {model 
-        | decks = model.decks ++ [Deck.newDeck id model.deckNameField]
+        | decks = model.decks ++ [Deck.newDeck id model.deckNameField False]
         , deckNameField = ""
         , showAddDeck = False} ! []
 
@@ -83,6 +83,9 @@ update msg model =
         ({ model | decks = updatedDecks}, Cmd.map DeckMsg deckCmd)
 
 
+
+-- VIEW
+
 onEnter : Msg -> Attribute Msg
 onEnter msg =
   let
@@ -95,7 +98,6 @@ onEnter msg =
     on "keydown" (Json.map tagger keyCode)
 
 
--- VIEW
 addDeckView : Model -> Html Msg 
 addDeckView {showAddDeck, deckNameField} = 
   if showAddDeck 

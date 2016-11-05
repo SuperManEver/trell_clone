@@ -3,6 +3,7 @@ module Deck exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (class, value, id)
 import Html.Events exposing (onClick, onInput, on, keyCode)
+import Json.Decode as Json
 
 
 -- MODEL
@@ -11,29 +12,39 @@ type alias Item =
   , text : String
   }
 
+newItem : String -> Item
+newItem str = 
+  { id = 1
+  , text = str
+  }
+
 
 type alias Model = 
   { id : Int
   , name : String
   , items : List Item
-  , showAddCard : Bool
+  , showAddItem : Bool
+  , field : String
   }
 
 
-newDeck : Int -> String -> Model 
-newDeck id name = 
+newDeck : Int -> String -> Bool -> Model 
+newDeck id name show = 
   { id = id
   , name = name
   , items = []
-  , showAddCard = False
+  , showAddItem = show
+  , field = ""
   }  
 
 
 -- UPDATE 
 type Msg 
   = NoOp
-  | ShowAddCard Int 
-  | HideAddCard Int
+  | ShowAddItem Int 
+  | HideAddItem Int
+  | UpdateField Int String
+  | CreateItem Int
 
 
 update : Msg -> List Model -> (List Model, Cmd Msg)
@@ -42,16 +53,71 @@ update msg model =
     NoOp -> 
       (model, Cmd.none)
 
-    ShowAddCard id -> 
-      (model, Cmd.none)
+    ShowAddItem id -> 
+      let 
+        newModel = List.map (\ deck -> if deck.id == id then { deck | showAddItem = True } else deck ) model
+      in
+        (newModel, Cmd.none)
 
-    HideAddCard id -> 
-      (model, Cmd.none)
+    UpdateField id str -> 
+      let 
+        newModel = List.map (\ deck -> if deck.id == id then { deck | field = str } else deck) model
+      in
+        (newModel, Cmd.none)
+
+    HideAddItem id -> 
+      let 
+        newModel = List.map (\ deck -> if deck.id == id then { deck | showAddItem = False } else deck) model
+      in
+        (newModel, Cmd.none)
+
+    CreateItem id -> 
+      let 
+        newModel = 
+          List.map 
+            (\ deck -> 
+              if deck.id == id 
+              then { deck | items = deck.items ++ [newItem deck.field], showAddItem = False } 
+              else deck) 
+            model
+      in
+        (newModel, Cmd.none)
+
+-- VIEW 
+
+onEnter : Msg -> Attribute Msg
+onEnter msg =
+  let
+    tagger code =
+      if code == 13 then
+        msg
+      else
+        NoOp
+  in
+    on "keydown" (Json.map tagger keyCode)
+
+addItemView : Model -> Html Msg 
+addItemView {id, showAddItem, field} = 
+  let 
+    updateField str = 
+      UpdateField id str
+  in
+    if showAddItem
+    then 
+      div [ class "add-deck" ] 
+        [ input [ value field, onInput updateField, onEnter (CreateItem id) ] [] 
+        , div [ class "controls" ] 
+          [ button [ class "btn btn-success btn-sm", onClick (CreateItem id) ] [ text "Add" ]
+          , span [ class "glyphicon glyphicon-remove", onClick (HideAddItem id) ] []
+          ]
+        ]
+    else 
+      button [ class "new-card btn btn-link", onClick (ShowAddItem id) ] [ text "Add a card ..."]  
 
 
 view : Model -> Html Msg  
 view model = 
   div [ class "deck" ] 
     [ p [] [ text model.name ]
-    , button [ class "new-card btn btn-link", onClick (ShowAddCard model.id) ] [ text "Add a card ..."]  
+    , addItemView model
     ]
