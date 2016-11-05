@@ -6,6 +6,7 @@ import Html.Events exposing (onClick, onInput, on, keyCode)
 import Json.Decode as Json
 import Task
 import Deck
+import Random
 
 main = program 
   { init = init 
@@ -31,7 +32,7 @@ type alias Model =
 
 defaultModel : Model 
 defaultModel =
-  { decks = [ Deck.newDeck "Work", Deck.newDeck "Hobby" ]
+  { decks = [ Deck.newDeck 1 "Elm", Deck.newDeck 2 "Haskell" ]
   , showAddDeck = False
   , deckNameField = ""
   }
@@ -44,6 +45,7 @@ type Msg
   | HideAddDeck
   | UpdateDeckNameField String
   | CreateDeck
+  | AddDeck Int
   | DeckMsg Deck.Msg
 
 
@@ -65,11 +67,14 @@ update msg model =
     UpdateDeckNameField val -> 
       {model | deckNameField = val } ! []
 
-    CreateDeck -> 
+    AddDeck id -> 
       {model 
-        | decks = model.decks ++ [Deck.newDeck model.deckNameField]
+        | decks = model.decks ++ [Deck.newDeck id model.deckNameField]
         , deckNameField = ""
         , showAddDeck = False} ! []
+
+    CreateDeck -> 
+      model ! [ Random.generate AddDeck (Random.int 1 100000) ]
 
     DeckMsg subMsg -> 
       let 

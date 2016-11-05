@@ -16,6 +16,19 @@
     color : Gray;
   }
 
+  .new-card {
+    width : 100%;
+    vertical-align: top;
+    display: inline-block;
+    background: #f5f5f5;
+    text-align: left;
+    @include border-radius(4px);
+    
+    &:hover {
+      background : gainsBoro;
+    }
+  }
+
 } // .deck
 
 .add-deck {

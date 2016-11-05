@@ -11,28 +11,47 @@ type alias Item =
   , text : String
   }
 
+
 type alias Model = 
   { id : Int
   , name : String
   , items : List Item
+  , showAddCard : Bool
   }
 
-newDeck : String -> Model 
-newDeck name = 
-  { id = 1
+
+newDeck : Int -> String -> Model 
+newDeck id name = 
+  { id = id
   , name = name
   , items = []
+  , showAddCard = False
   }  
 
+
 -- UPDATE 
-type Msg = NoOp
+type Msg 
+  = NoOp
+  | ShowAddCard Int 
+  | HideAddCard Int
+
 
 update : Msg -> List Model -> (List Model, Cmd Msg)
 update msg model = 
-  (model, Cmd.none)
+  case msg of 
+    NoOp -> 
+      (model, Cmd.none)
+
+    ShowAddCard id -> 
+      (model, Cmd.none)
+
+    HideAddCard id -> 
+      (model, Cmd.none)
+
 
 view : Model -> Html Msg  
 view model = 
   div [ class "deck" ] 
     [ p [] [ text model.name ]
+    , button [ class "new-card btn btn-link", onClick (ShowAddCard model.id) ] [ text "Add a card ..."]  
     ]
