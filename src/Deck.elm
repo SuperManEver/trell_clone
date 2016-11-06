@@ -55,65 +55,63 @@ type Msg
 
 update : Msg -> List Model -> (List Model, Cmd Msg)
 update msg model = 
-  case msg of 
-    NoOp -> 
-      (model, Cmd.none)
+  let 
+    updateModel diff id = 
+      List.map (\ deck -> if deck.id == id then diff deck else deck ) model
 
-    ShowAddItem id -> 
-      let 
-        newModel = List.map (\ deck -> if deck.id == id then { deck | showAddItem = True } else deck ) model
-        focus = Dom.focus ("addItemId-" ++ toString id)
-      in
-        (newModel, Task.perform (\_ -> NoOp) (\_ -> NoOp) focus)
+    toggleEditDeckName = 
+      updateModel (\ deck -> {deck | editDeckName = not deck.editDeckName }) 
+  in 
+    case msg of 
+      NoOp -> 
+        (model, Cmd.none)
 
-    UpdateField id str -> 
-      let 
-        newModel = List.map (\ deck -> if deck.id == id then { deck | field = str } else deck) model
-      in
-        (newModel, Cmd.none)
+      ShowAddItem id -> 
+        let 
+          newModel = updateModel (\ deck -> { deck | showAddItem = True }) id
+          focus = Dom.focus ("addItemId-" ++ toString id)
+        in
+          (newModel, Task.perform (\_ -> NoOp) (\_ -> NoOp) focus)
 
-    HideAddItem id -> 
-      let 
-        newModel = List.map (\ deck -> if deck.id == id then { deck | showAddItem = False } else deck) model
-      in
-        (newModel, Cmd.none)
+      UpdateField id str -> 
+        let 
+          newModel = updateModel (\ deck -> { deck | field = str }) id
+        in
+          (newModel, Cmd.none)
 
-    
+      HideAddItem id -> 
+        let 
+          newModel = updateModel (\ deck -> { deck | showAddItem = False }) id
+        in 
+          (newModel, Cmd.none)
 
-    CreateItem id -> 
-      let 
-        newModel = 
-          List.map 
-            (\ deck -> 
-              if deck.id == id 
-              then 
-                { deck | items = deck.items ++ [newItem deck.field]
-                , showAddItem = False
-                , field = ""
-                } 
-              else deck) 
-            model
-      in
-        (newModel, Cmd.none)
+      CreateItem id -> 
+        let 
+          newModel = 
+            updateModel 
+              (\ deck -> {deck | items = deck.items ++ [newItem deck.field], showAddItem = False, field = ""}) 
+              id
+        in
+          (newModel, Cmd.none)
 
-    UpdateDeckName id str -> 
-      let 
-        newModel = List.map (\ deck -> if deck.id == id then {deck | name = str } else deck) model
-      in
-        (newModel, Cmd.none)
+      UpdateDeckName id str -> 
+        let 
+          newModel = updateModel (\ deck -> {deck | name = str}) id
+        in
+          (newModel, Cmd.none)
 
-    EditDeckName id -> 
-      let 
-        newModel = List.map (\ deck -> if deck.id == id then {deck | editDeckName = True } else deck ) model
-        -- focus = Dom.focus ("addItemId-" ++ toString id)
-      in 
-        (newModel, Cmd.none)
+      EditDeckName id -> 
+        let 
+          newModel = toggleEditDeckName id
+          -- focus = Dom.focus ("addItemId-" ++ toString id)
+        in 
+          (newModel, Cmd.none)
 
-    SaveNewDeckName id -> 
-      let 
-        newModel = List.map (\ deck -> if deck.id == id then {deck | editDeckName = False } else deck) model
-      in
-        (newModel, Cmd.none)
+      SaveNewDeckName id -> 
+        let 
+          newModel = toggleEditDeckName id
+        in
+          (newModel, Cmd.none)
 
 
 -- VIEW 
