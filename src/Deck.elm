@@ -103,9 +103,9 @@ update msg model =
       EditDeckName id -> 
         let 
           newModel = toggleEditDeckName id
-          -- focus = Dom.focus ("addItemId-" ++ toString id)
+          focus = Dom.focus ("edit-deck-name-" ++ toString id)
         in 
-          (newModel, Cmd.none)
+          (newModel, Task.perform (\_ -> NoOp) (\_ -> NoOp) focus)
 
       SaveNewDeckName id -> 
         let 
@@ -126,6 +126,7 @@ onEnter msg =
         NoOp
   in
     on "keydown" (Json.map tagger keyCode)
+
 
 addItemView : Model -> Html Msg 
 addItemView {id, showAddItem, field} = 
@@ -152,14 +153,22 @@ itemsListView {items} =
   in
     div [] xs
 
+
 editDeckNameView : Model -> Html Msg
 editDeckNameView {id, editDeckName, name} = 
   let 
     updateDeckName str = UpdateDeckName id str
   in 
     if editDeckName
-    then input [ class "deck-name-input", value name, onInput updateDeckName, onEnter (SaveNewDeckName id) ] []
+    then 
+      input 
+        [ class "deck-name-input"
+        , value name
+        , onInput updateDeckName
+        , onEnter (SaveNewDeckName id)
+        , Attr.id ("edit-deck-name-" ++ toString id) ] []
     else p [ onClick (EditDeckName id) ] [ text name ]
+
 
 view : Model -> Html Msg  
 view model = 
