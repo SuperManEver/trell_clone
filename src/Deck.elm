@@ -6,6 +6,7 @@ import Html.Attributes as Attr exposing (class, value, id)
 import Html.Events exposing (onClick, onInput, on, keyCode)
 import Json.Decode as Json
 import Task
+import Random
 
 -- MODEL
 type alias Item = 
@@ -13,9 +14,9 @@ type alias Item =
   , text : String
   }
 
-newItem : String -> Item
-newItem str = 
-  { id = 1
+newItem : Int -> String -> Item
+newItem id str = 
+  { id = id
   , text = str
   }
 
@@ -51,6 +52,7 @@ type Msg
   | EditDeckName Int
   | UpdateDeckName Int String
   | SaveNewDeckName Int
+  | AddItem (Int, Int)
 
 
 update : Msg -> List Model -> (List Model, Cmd Msg)
@@ -85,14 +87,19 @@ update msg model =
         in 
           (newModel, Cmd.none)
 
-      CreateItem id -> 
+      AddItem (deck_id, item_id) -> 
         let 
           newModel = 
             updateModel 
-              (\ deck -> {deck | items = deck.items ++ [newItem deck.field], showAddItem = False, field = ""}) 
-              id
+              (\ deck -> {deck | items = deck.items ++ [newItem item_id deck.field], showAddItem = False, field = ""}) 
+              deck_id
         in
           (newModel, Cmd.none)
+
+      CreateItem id -> 
+        let addItem item_id = AddItem (id, item_id)
+        in
+          (model, Random.generate addItem (Random.int 1 100000))
 
       UpdateDeckName id str -> 
         let 
