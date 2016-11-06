@@ -2,7 +2,7 @@ module Deck exposing (..)
 
 import Dom
 import Html exposing (..)
-import Html.Attributes exposing (class, value, id)
+import Html.Attributes as Attr exposing (class, value, id)
 import Html.Events exposing (onClick, onInput, on, keyCode)
 import Json.Decode as Json
 import Task
@@ -128,21 +128,21 @@ onEnter msg =
     on "keydown" (Json.map tagger keyCode)
 
 addItemView : Model -> Html Msg 
-addItemView model = 
+addItemView {id, showAddItem, field} = 
   let 
-    updateField str = UpdateField model.id str
+    updateField str = UpdateField id str
   in
-    if model.showAddItem
+    if showAddItem
     then 
       div [ class "add-deck" ] 
-        [ input [ value model.field, onInput updateField, onEnter (CreateItem model.id), id ("addItemId-" ++ toString model.id) ] [] 
+        [ input [ value field, onInput updateField, onEnter (CreateItem id), Attr.id ("addItemId-" ++ toString id) ] [] 
         , div [ class "controls" ] 
-          [ button [ class "btn btn-success btn-sm", onClick (CreateItem model.id) ] [ text "Add" ]
-          , span [ class "glyphicon glyphicon-remove", onClick (HideAddItem model.id) ] []
+          [ button [ class "btn btn-success btn-sm", onClick (CreateItem id) ] [ text "Add" ]
+          , span [ class "glyphicon glyphicon-remove", onClick (HideAddItem id) ] []
           ]
         ]
     else 
-      button [ class "new-card btn btn-link", onClick (ShowAddItem model.id) ] [ text "Add a card ..."]  
+      button [ class "new-card btn btn-link", onClick (ShowAddItem id) ] [ text "Add a card ..."]  
  
 
 itemsListView : Model -> Html Msg 
