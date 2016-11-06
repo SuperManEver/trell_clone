@@ -26,6 +26,7 @@ type alias Model =
   , items : List Item
   , showAddItem : Bool
   , field : String
+  , editDeckName : Bool
   }
 
 
@@ -36,6 +37,7 @@ newDeck id name show items =
   , items = items
   , showAddItem = show
   , field = ""
+  , editDeckName = False
   }  
 
 
@@ -46,6 +48,9 @@ type Msg
   | HideAddItem Int
   | UpdateField Int String
   | CreateItem Int
+  | EditDeckName Int
+  | UpdateDeckName Int String
+  | SaveNewDeckName Int
 
 
 update : Msg -> List Model -> (List Model, Cmd Msg)
@@ -73,6 +78,8 @@ update msg model =
       in
         (newModel, Cmd.none)
 
+    
+
     CreateItem id -> 
       let 
         newModel = 
@@ -88,6 +95,26 @@ update msg model =
             model
       in
         (newModel, Cmd.none)
+
+    UpdateDeckName id str -> 
+      let 
+        newModel = List.map (\ deck -> if deck.id == id then {deck | name = str } else deck) model
+      in
+        (newModel, Cmd.none)
+
+    EditDeckName id -> 
+      let 
+        newModel = List.map (\ deck -> if deck.id == id then {deck | editDeckName = True } else deck ) model
+        -- focus = Dom.focus ("addItemId-" ++ toString id)
+      in 
+        (newModel, Cmd.none)
+
+    SaveNewDeckName id -> 
+      let 
+        newModel = List.map (\ deck -> if deck.id == id then {deck | editDeckName = False } else deck) model
+      in
+        (newModel, Cmd.none)
+
 
 -- VIEW 
 
@@ -127,10 +154,19 @@ itemsListView {items} =
   in
     div [] xs
 
+editDeckNameView : Model -> Html Msg
+editDeckNameView {id, editDeckName, name} = 
+  let 
+    updateDeckName str = UpdateDeckName id str
+  in 
+    if editDeckName
+    then input [ class "deck-name-input", value name, onInput updateDeckName, onEnter (SaveNewDeckName id) ] []
+    else p [ onClick (EditDeckName id) ] [ text name ]
+
 view : Model -> Html Msg  
 view model = 
   div [ class "deck" ] 
-    [ p [] [ text model.name ]
+    [ editDeckNameView model
     , itemsListView model
     , addItemView model
     ]
