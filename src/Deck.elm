@@ -117,17 +117,11 @@ update msg model =
 
       ItemMsg id itemMsg -> 
         let 
-          -- (updatedItems, itemCmd) = Item.update itemMsg model.items
-          -- newModel = updateModel (\ deck -> {deck | items = updatedItems}) id 
-          -- doesn't work
-          -- deck = List.head << List.filter (\ deck -> deck.id == id) model 
           deck model = 
             model 
               |> List.filter (\ deck -> deck.id == id)
               |> List.head
         in
-          -- ({ model | items = updatedItems }, Cmd.map ItemMsg itemCmd)
-          -- (newModel, Cmd.map (ItemMsg id) itemCmd)
           case deck model of 
             Nothing -> 
               (model, Cmd.none)
@@ -136,7 +130,7 @@ update msg model =
               let
                 (updatedItems, itemCmd) = Item.update itemMsg deck.items
               in
-                (updateModel (\ deck -> if deck.id == id then {deck | items = updatedItems} else deck), Cmd.map ItemMsg itemCmd)
+                (updateModel (\ deck -> {deck | items = updatedItems}) id, Cmd.map (ItemMsg id) itemCmd)
 
 
 -- VIEW 
