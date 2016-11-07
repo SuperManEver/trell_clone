@@ -12,7 +12,7 @@
   margin-right : 8px;
   vertical-align: top;
 
-  p {
+  & > p {
     color : Gray;
     margin-bottom: 7px;
   }
@@ -42,7 +42,7 @@
     .glyphicon {
       float : right;
       font-size : 0.83em;
-      padding-top : 3px;
+      padding-top : 2px;
 
       &:hover {
         opacity: 0.8;
