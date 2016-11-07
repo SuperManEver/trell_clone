@@ -32,4 +32,7 @@ update msg model =
 -- VIEW 
 view : Model -> Html Msg 
 view model = 
-  div [ class "item" ] [ text model.text ]
+  div [ class "item" ] 
+    [ text model.text 
+    , span [ class "glyphicon glyphicon-trash" ] []
+    ]

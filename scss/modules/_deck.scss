@@ -38,6 +38,18 @@
     color : Gray;
     font-weight : normal;
     font-size : 0.9em;
+  
+    .glyphicon {
+      float : right;
+      font-size : 0.83em;
+      padding-top : 3px;
+
+      &:hover {
+        opacity: 0.8;
+        cursor : pointer;
+      }
+    }
+
   } // .item 
 
   .deck-name-input {
