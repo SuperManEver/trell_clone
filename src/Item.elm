@@ -1,10 +1,11 @@
 module Item exposing (..)
 
+import Dom
 import Html as Html exposing (..)
-import Html.Attributes exposing (class, value)
+import Html.Attributes as Attr exposing (class, value, id)
 import Html.Events exposing (onClick, onInput, on, keyCode)
 import Json.Decode as Json
-
+import Task
 
 -- MODEL 
 
@@ -45,8 +46,9 @@ update msg model =
     EditItem id -> 
       let 
         newModel = List.map (\ item -> if item.id == id then {item | editing = True} else item) model
+        focus = Dom.focus ("item-edit-" ++ toString id)
       in
-        newModel ! []
+        newModel ! [ Task.perform (\_ -> NoOp) (\_ -> NoOp) focus ]
 
     UpdateText id str -> 
       let 
@@ -80,7 +82,7 @@ itemView {id, text, editing} =
 
     itemDisplay = 
       if editing
-      then input [ value text, onInput updateText, onEnter (SaveItemText id) ] []
+      then input [ value text, onInput updateText, onEnter (SaveItemText id), Attr.id ("item-edit-" ++ (toString id)) ] []
       else p [ class "inline-block", onClick (EditItem id) ] [ Html.text text ]
   in 
     div [ class "inline-block" ] 
