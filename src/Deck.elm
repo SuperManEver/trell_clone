@@ -7,31 +7,20 @@ import Html.Events exposing (onClick, onInput, on, keyCode)
 import Json.Decode as Json
 import Task
 import Random
+import Item 
 
 -- MODEL
-type alias Item = 
-  { id : Int 
-  , text : String
-  }
-
-newItem : Int -> String -> Item
-newItem id str = 
-  { id = id
-  , text = str
-  }
-
 
 type alias Model = 
   { id : Int
   , name : String
-  , items : List Item
+  , items : List Item.Model
   , showAddItem : Bool
   , field : String
   , editDeckName : Bool
   }
 
-
-newDeck : Int -> String -> Bool -> List Item -> Model 
+newDeck : Int -> String -> Bool -> List Item.Model -> Model 
 newDeck id name show items = 
   { id = id
   , name = name
@@ -53,6 +42,7 @@ type Msg
   | UpdateDeckName Int String
   | SaveNewDeckName Int
   | AddItem (Int, Int)
+  | ItemMsg Int Item.Msg
 
 
 update : Msg -> List Model -> (List Model, Cmd Msg)
@@ -91,7 +81,12 @@ update msg model =
         let 
           newModel = 
             updateModel 
-              (\ deck -> {deck | items = deck.items ++ [newItem item_id deck.field], showAddItem = False, field = ""}) 
+              (\ deck -> 
+                { deck 
+                | items = deck.items ++ [Item.newItem item_id deck.field]
+                , showAddItem = False
+                , field = ""
+                }) 
               deck_id
         in
           (newModel, Cmd.none)
@@ -119,6 +114,29 @@ update msg model =
           newModel = toggleEditDeckName id
         in
           (newModel, Cmd.none)
+
+      ItemMsg id itemMsg -> 
+        let 
+          -- (updatedItems, itemCmd) = Item.update itemMsg model.items
+          -- newModel = updateModel (\ deck -> {deck | items = updatedItems}) id 
+          -- doesn't work
+          -- deck = List.head << List.filter (\ deck -> deck.id == id) model 
+          deck model = 
+            model 
+              |> List.filter (\ deck -> deck.id == id)
+              |> List.head
+        in
+          -- ({ model | items = updatedItems }, Cmd.map ItemMsg itemCmd)
+          -- (newModel, Cmd.map (ItemMsg id) itemCmd)
+          case deck model of 
+            Nothing -> 
+              (model, Cmd.none)
+
+            Just deck -> 
+              let
+                (updatedItems, itemCmd) = Item.update itemMsg deck.items
+              in
+                (updateModel (\ deck -> if deck.id == id then {deck | items = updatedItems} else deck), Cmd.map ItemMsg itemCmd)
 
 
 -- VIEW 

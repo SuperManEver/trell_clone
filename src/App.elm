@@ -7,6 +7,7 @@ import Json.Decode as Json
 import Task
 import Deck
 import Random
+import Item
 
 main = program 
   { init = init 
@@ -32,7 +33,7 @@ type alias Model =
 
 defaultModel : Model 
 defaultModel =
-  { decks = [ Deck.newDeck 1 "Elm" False [], Deck.newDeck 2 "Haskell" True [Deck.newItem 1 "Hello", Deck.newItem 2 "World"] ]
+  { decks = [ Deck.newDeck 1 "Elm" False [], Deck.newDeck 2 "Haskell" True [Item.newItem 1 "Hello", Item.newItem 2 "World"] ]
   , showAddDeck = False
   , deckNameField = ""
   }
