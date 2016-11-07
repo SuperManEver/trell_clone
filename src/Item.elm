@@ -2,7 +2,9 @@ module Item exposing (..)
 
 import Html as Html exposing (..)
 import Html.Attributes exposing (class, value)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (onClick, onInput, on, keyCode)
+import Json.Decode as Json
+
 
 -- MODEL 
 
@@ -26,6 +28,7 @@ type Msg
   | DeleteItem Int
   | EditItem Int
   | UpdateText Int String
+  | SaveItemText Int
 
 update : Msg -> List Model -> (List Model, Cmd Msg)
 update msg model =
@@ -51,7 +54,24 @@ update msg model =
       in 
         newModel ! []
 
+    SaveItemText id ->
+      let 
+        newModel = List.map (\ item -> if item.id == id then {item | editing = False} else item) model
+      in
+        newModel ! []
+
 -- VIEW 
+
+onEnter : Msg -> Attribute Msg
+onEnter msg =
+  let
+    tagger code =
+      if code == 13 then
+        msg
+      else
+        NoOp
+  in
+    on "keydown" (Json.map tagger keyCode)
 
 itemView : Model -> Html Msg 
 itemView {id, text, editing} = 
@@ -60,7 +80,7 @@ itemView {id, text, editing} =
 
     itemDisplay = 
       if editing
-      then input [ value text, onInput updateText ] []
+      then input [ value text, onInput updateText, onEnter (SaveItemText id) ] []
       else p [ class "inline-block", onClick (EditItem id) ] [ Html.text text ]
   in 
     div [ class "inline-block" ] 
