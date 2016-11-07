@@ -1,6 +1,7 @@
 module Item exposing (..)
 
 import Html exposing (..)
+import Html.Attributes exposing (class)
 
 -- MODEL 
 
@@ -29,4 +30,6 @@ update msg model =
 
 
 -- VIEW 
--- view : Model -> 
+view : Model -> Html Msg 
+view model = 
+  div [ class "item" ] [ text model.text ]

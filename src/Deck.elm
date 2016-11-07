@@ -8,6 +8,7 @@ import Json.Decode as Json
 import Task
 import Random
 import Item 
+import Html.App as App
 
 -- MODEL
 
@@ -109,11 +110,13 @@ update msg model =
         in 
           (newModel, Task.perform (\_ -> NoOp) (\_ -> NoOp) focus)
 
+
       SaveNewDeckName id -> 
         let 
           newModel = toggleEditDeckName id
         in
           (newModel, Cmd.none)
+
 
       ItemMsg id itemMsg -> 
         let 
@@ -166,9 +169,9 @@ addItemView {id, showAddItem, field} =
  
 
 itemsListView : Model -> Html Msg 
-itemsListView {items} = 
+itemsListView {id, items} = 
   let 
-    xs = List.map (\ item -> div [ class "item" ] [ text item.text ]) items
+    xs = List.map (\ item -> App.map (ItemMsg id) (Item.view item)) items
   in
     div [] xs
 
