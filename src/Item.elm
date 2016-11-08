@@ -33,34 +33,40 @@ type Msg
 
 update : Msg -> List Model -> (List Model, Cmd Msg)
 update msg model =
-  case msg of 
-    NoOp -> 
-      (model, Cmd.none)
+  let 
+    updateModel diff id = 
+      List.map 
+        (\ item -> if item.id == id then diff item else item) 
+        model
+  in
+    case msg of 
+      NoOp -> 
+        (model, Cmd.none)
 
-    DeleteItem id -> 
-      let 
-        newModel = List.filter (\ item -> not (item.id == id)) model
-      in
-        newModel ! []
+      DeleteItem id -> 
+        let 
+          newModel = List.filter (\ item -> not (item.id == id)) model
+        in
+          newModel ! []
 
-    EditItem id -> 
-      let 
-        newModel = List.map (\ item -> if item.id == id then {item | editing = True} else item) model
-        focus = Dom.focus ("item-edit-" ++ toString id)
-      in
-        newModel ! [ Task.perform (\_ -> NoOp) (\_ -> NoOp) focus ]
+      EditItem id -> 
+        let 
+          newModel = updateModel (\ item -> {item | editing = True}) id
+          focus = Dom.focus ("item-edit-" ++ toString id)
+        in
+          newModel ! [ Task.perform (\_ -> NoOp) (\_ -> NoOp) focus ]
 
-    UpdateText id str -> 
-      let 
-        newModel = List.map (\ item -> if item.id == id then {item | text = str} else item) model
-      in 
-        newModel ! []
+      UpdateText id str -> 
+        let 
+          newModel = updateModel (\ item -> {item | text = str}) id
+        in 
+          newModel ! []
 
-    SaveItemText id ->
-      let 
-        newModel = List.map (\ item -> if item.id == id then {item | editing = False} else item) model
-      in
-        newModel ! []
+      SaveItemText id ->
+        let 
+          newModel = updateModel (\ item -> {item | editing = False}) id
+        in
+          newModel ! []
 
 -- VIEW 
 
